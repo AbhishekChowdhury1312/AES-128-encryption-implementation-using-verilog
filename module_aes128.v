@@ -45,13 +45,9 @@ module aes128(rst,plain_text,key,out);
     W[2] = key[63:32];
     W[1] = key[95:64];
     W[0] = key[127:96];
-//     Wtmp = #1 W[0];
-//     Wtmp = #1 W[1];
-//     Wtmp = #1 W[2];
-//     Wtmp = #1 W[3];
+
     j = 0;
     for (i=4;i<44;i=i+1) begin
-      //W[i] = generation(W[i-1],W[i-4]);
       x = W[i-1];
       y = W[i-4];
       b1 = x [7:0];
@@ -65,10 +61,7 @@ module aes128(rst,plain_text,key,out);
       b3 = b2;
       b2 = b1;
       b1 = tmp;
-      //$display("%d,%h",i,{b4,b3,b2,b1});
 	 
-      //sbox_array s1;  
-	  //b4 = 6b
       //sbox substitution
       //-->>
       
@@ -76,25 +69,18 @@ module aes128(rst,plain_text,key,out);
       b3 = sbox[(b3[7:4]*16)+b3[3:0]];
       b2 = sbox[(b2[7:4]*16)+b2[3:0]];
       b1 = sbox[(b1[7:4]*16)+b1[3:0]];
-     //$display("%d,%h",i,{b4,b3,b2,b1});
+
      // round constant
       if(i%4 == 0) begin
         j = j+1;
         x = Rcon[j] ^ {b4,b3,b2,b1};
-        //$display("%d,%h",i,x);
         x= x^y;
       end
       else
         x = x ^ y;
       
       W[i] = x;
-      //$display("%d =%h",i,x);
-      //Wtmp = #1 W[i];   
     end
-    
-//     for(i=0;i<=10;i=i+1) begin
-//       $display("Round %d = %h",i,{W[4*i],W[4*i+1],W[4*i+2],W[4*i+3]});
-//     end
   end
   
   
@@ -106,7 +92,6 @@ task aRK;
     begin
         Wtmp128o = plain_text ^ Wtmp128i;
     end
-  //$display("plain=%h,in=%h,out=%h",plain_text,Wtmp128i,Wtmp128o);
 endtask
 
   
@@ -131,17 +116,9 @@ endtask
   integer count,i;
   reg [31:0]Wd[3:0];
   begin
-//     Wd[0] = Wtmp[127:96];
-//     $display("ppWd0=%h",Wd[0]);
-//     Wd[3] = {Wtmp[103:96],Wtmp[71:64],Wtmp[39:32],Wtmp[7:0]};
-//     Wd[2] = {Wtmp[111:104],Wtmp[79:72],Wtmp[47:40],Wtmp[15:8]};
-//     Wd[1] = {Wtmp[119:112],Wtmp[87:80],Wtmp[55:48],Wtmp[23:16]};
-//     Wd[0] = {Wtmp[127:120],Wtmp[95:88],Wtmp[63:56],Wtmp[31:24]};
-//    $display("qqWd0=%h",Wd[0]);
     for (i=0;i<4;i=i+1) begin
       count = 0;
       eas = 127 - 8*i;
-      //ex = Wtmp[eas -:8];
       ex = {Wtmp[eas-:8],Wtmp[(eas-32)-:8],Wtmp[(eas-64)-:8],Wtmp[(eas-96)-:8]};
 
       while (count != i) begin
@@ -156,15 +133,11 @@ endtask
     end
       
       Wtmp128o[eas-:8] = ex[31:24];
-      //$display("Wt0[eas-:8]=%h",Wtmp128o[eas-:8]);
       Wtmp128o[(eas-32)-:8] = ex[23:16];
-      //$display("Wt1=%h",Wtmp128o[(eas-32)-:8]);
       Wtmp128o[(eas-64)-:8] = ex[15:8];
-      //$display("Wt2=%h",Wtmp128o[(eas-64)-:8]);
       Wtmp128o[(eas-96)-:8] = ex[7:0];
-      //$display("Wt3=%h",Wtmp128o[(eas-96)-:8]);
+
     end
-    //$display("xxWtmp128o=%h",Wtmp128o);
   end
   endtask
   
@@ -188,8 +161,7 @@ endtask
         Wd[1] = word[95:64];
         Wd[2] = word[63:32];
         Wd[3] = word[31:0];
-    //    s [(4*i)+j] = multiply(Wd[i],{b[j],b[j+4],b[j+8],b[j+12]});
-      //$display("mul Wd[0]=%h,%h,%h,%h,%h",Wd[0],b[0],b[1],b[2],b[3]);
+	    
         s[0] = multiply(Wd[0],b[0],b[1],b[2],b[3]);   
         s[1] = multiply(Wd[0],b[4],b[5],b[6],b[7]);
         s[2] = multiply(Wd[0],b[8],b[9],b[10],b[11]);   
@@ -212,7 +184,6 @@ endtask
       for(i=0;i<16;i=i+1)
         ans[(127-(8*i)) -: 8] = s[i];  
     end
-    //$display("ans=%h",ans);
     
   endtask
     
@@ -222,16 +193,11 @@ endtask
         reg [31:0]t1,t2,t3,t4;
         begin
           t4 = goliath(a[31:24],b0);
-          //$display("a[31:24]=%h,b0=%h,t4=%h",a[31:24],b0,t4);
           t3 = goliath(a[23:16],b1);
-          //$display("a[23:16]=%h,b1=%h,t3=%h",a[23:16],b1,t3);
           t2 = goliath(a[15:8],b2);
-          //$display("a[15:8]=%h,b2=%h,t2=%h",a[15:8],b2,t2);
           t1 = goliath(a[7:0], b3);
-          //$display("a[7:0]=%h,b3=%h,t1=%h",a[23:16],b3,t1);
             
           multiply = t1 ^ t2 ^ t3 ^ t4;
-          //$display("t1=%h,t2=%h,t3=%h,t4=%h,mul=%h",t1,t2,t3,t4,multiply);
         end
     endfunction
     
@@ -251,7 +217,6 @@ endtask
                 goliath = goliath ^ 8'h1B;
             goliath = goliath ^ a;
         end
-        //$display("b=%h,a=%h,goli=%h",b,a, goliath);
         end
     endfunction
     
@@ -277,7 +242,6 @@ endtask
        
       
       addRoundKey: begin
-         //$display("round=%d,add - 1",round);
          if(round==0)
          	Wtmp128i = plain_text;
          else
@@ -285,8 +249,6 @@ endtask
          aRK(Wtmp128i, {W[(round*4)],W[(round*4)+1],W[(round*4)+2],W[(round*4)+3]}, Wtmp);
          next_state = subBytes;
         
-       
-         $display("round=%d,addRoundKey=%h",round,Wtmp);
          round = round+1;
       end
       
@@ -302,7 +264,6 @@ endtask
         for (i = 0; i < 16; i = i + 1) begin
           Wtmp[i*8 +: 8] = Wtmp8o[i];
         end
-        $display("round=%d, sub=%h",round, Wtmp);
         next_state = shiftRows;
       end
         else
@@ -312,23 +273,16 @@ endtask
       shiftRows: begin
         sR(Wtmp,Wtmp128o);
         Wtmp = Wtmp128o;
-        //$display("round=%d,shift - 3",round);
-        //$display("round=%d,Wtmp=%h",round,Wtmp);
         if(round<10)
         	next_state = mixColumns;
       	else
           	next_state = addRoundKey;
-        
-        $display("round=%d, shift=%h",round, Wtmp);
       end
       
       mixColumns: begin
-        //$display("round=%d, mix - 4",round);
         mix_columns(Wtmp,Wtmp128o);
         Wtmp = Wtmp128o;
-        $display("round=%d, mix=%h",round,Wtmp);
         next_state = addRoundKey;
-        //Wtmp128i = Wtmp;
       end
       
       default: 

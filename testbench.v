@@ -10,8 +10,6 @@ module tb;
     rst = 1;
     plain_text = 128'h54776F204F6E65204E696E652054776F;
     key = 128'h5468617473206D79204B756E67204675;
-    #5 key =128'h000102030405060708090a0b0c0d0e0f;  
-    plain_text = 128'h00112233445566778899aabbccddeeff;
     #5 rst =0;
      
   end

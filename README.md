@@ -21,12 +21,14 @@ XOR with Previous Word: The result of the XOR operation is XORed with the fourth
 Subsequent Words: The remaining three words (W[1], W[2], and W[3]) are simply copied from the previous round.
 Iteration: This process is repeated for a total of 11 rounds, generating 12 round keys in total
 
-6. State Machine: There are 5 states. They are IDLE, addRoundKey, subBytes, shiftRows, mixColumns
-  IDLE : It is initial state of the state machine
-  addRoundKey: Mixes the data with the round key to make it more difficult to analyze and decrypt
-  subBytes: For substituting byte from previously defined S-box
-  shiftRows: Cyclically shift each row of the state to the left. The number of positions shifted depends on the row. 
-  mixColumns:Perform a matrix multiplication on each column of the state.
+6. State Machine: There are 5 states. They are IDLE, addRoundKey, subBytes, shiftRows, mixColumns  
+  IDLE : It is initial state of the state machine  
+  addRoundKey: Mixes the data with the round key to make it more difficult to analyze and decrypt  
+  subBytes: For substituting byte from previously defined S-box  
+  shiftRows: Cyclically shift each row of the state to the left. The number of positions shifted depends on the row.   
+  mixColumns:Perform a matrix multiplication on each column of the state.  
+
+Addroundkey is run once at the beginning and once after each round, so a total of 11 times. Shiftrows and byte substituitions are run for 10 times for 10 rounds. The mix column is ignored in the final round, so it is run 9 times.
 
 note: In the final round, which is round 11 including the initial addRoundKey operation, mixColumns operation is ignored.
 
